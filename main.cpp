@@ -1,147 +1,224 @@
 //
 // Created by 张啸宇 on 2019-04-19.
 //
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-/*
-  type类别表:
-         1 : 关键字
-         2 : 界符
-	     3 : 运算符
-	     4 : 数字
-         5 : 变量
-         6 : 不合法
- */
-typedef struct word {
-    int type;
-    char value[20];
-} Word;
-
-/**
- * 13 个保留字
- * 05 个界符
- * 11 个运算符
- * 10 个数字
- */
-char keyword[39][20] = {"begin", "call", "const", "do", "end", "if", "odd", "procedure", "read", "then", "var", "while",
-                        "write",
-                        ".", ";", ",", "(", ")",
-                        "+", "-", "*", "/", "=", "<", ">", "<=", ">=", ":=", "#",
-                        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
-
+#include <cstring>
+#include "pl0.h"
 
 int main() {
-    char ch, temp_word[20] = "";
-    int word_cnt = 0, j = 0, k = 0, key = 0, type = 0;
-    FILE *file;
-    Word source_words[100];
+    printf("请输入要分析的文件名\n");
+    scanf("%s", fname);
+    fin = fopen(fname, "r");
+    if (fin) {
+        printf("请输入要保存的文件名\n");
+        scanf("%s", fname);
+        fa1 = fopen(fname, "w");
+        init();
+        err = 0;
+        cc = cx = ll = 0;
+        ch = ' ';
+        printf("xxxx");
+        while (getsym() != -1) {
 
-    file = fopen("/Users/xiaoyuu/CLionProjects/PL0/nasm.txt", "r");
-    if (!file) {
-        printf("can't open file C_program.txt\n");
-        exit(1);
+        }
+        fclose(fa1);
+        printf("分析完毕");
+
+    } else {
+        printf("找不到文件\n");
     }
-    printf("源程序如下:");
-    while ((ch = fgetc(file)) != EOF) {
-        putchar(ch);
+    // printf("\n");
+    return 0;
+}
 
-        if (ch == ' ' || ch == 10 || ch == 9 || ch == '	') {
-            continue;
+void error(int n) {
+    char space[81];
+    memset(space, 32, 81);
+    space[cc - 1] = 0;
+    printf("****%s!%d\n", space, n);
+    fprintf(fa1, "****%s1%d\n", space, n);
+    err++;
+}
+
+int getch() {
+    if (cc == ll) {
+        if (feof(fin)) {
+            printf("Program incomplete");
+            return -1;
         }
-
-        if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9')) {
-            temp_word[key++] = ch;
-            temp_word[key] = '\0';
-            continue;
-        }
-
-//        if (strcmp(temp_word, "") != 0) {
-//            strcpy(source_words[word_cnt++].value, temp_word);
-//            strcpy(temp_word, "");
-//            key = 0;
-//        }
-
-        temp_word[0] = ch;
-        if (temp_word[0] == ':' || temp_word[0] == '>' || temp_word[0] == '<')
-            ch = static_cast<char>(fgetc(file));
-        if (ch == '=') {
-            temp_word[1] = ch;
-            temp_word[2] = '\0';
-        } else {
-            temp_word[1] = '\n';
-        }
-
-        strcpy(source_words[word_cnt++].value, temp_word);//将非字母数字符号拷贝到结构数组中
-        strcpy(temp_word, "");
-        key = 0;//回到临时数组的开始位置
-    }
-
-    for (j = 0; j < word_cnt; j++) {
-        for (k = 0; k < 39; k++) {
-            if ((strcmp(source_words[j].value, keyword[k])) == 0) {
-                if (k >= 0 && k < 13)
-                    source_words[j].type = 1;
-                else if (k >= 13 && k < 18)
-                    source_words[j].type = 2;
-                else if (k >= 18 && k < 29)
-                    source_words[j].type = 3;
-                else if (k >= 29 && k < 39)
-                    source_words[j].type = 4;
+        ll = 0;
+        cc = 0;
+//        printf("%d", cx);
+//        fprintf(fa1, "%d ", cx);
+        ch = ' ';
+        //处理一整行
+        while (ch != 10) {
+            if (EOF == fscanf(fin, "%c", &ch)) {
+                line[ll] = 0;
                 break;
-            } else {
-                source_words[j].type = 2;//变量
             }
-
+//            printf("%c", ch);
+//            fprintf(fa1, "%c", ch);
+            line[ll++] = ch;
         }
-    }
-    printf("\n词法分析结果如下:\n");
-    for (int i = 0; i < word_cnt; ++i) {
-        printf("(%d,'%s')\n", source_words[i].type, source_words[i].value);
-    }
-    //输出保留字
-    printf("\n保留字表：\n\n");
-    for (j = 0; j < word_cnt; j++) {
-        if (source_words[j].type == 1) {
-            printf("%s ", source_words[j].value);
-        }
+//        printf("\n");
+//        fprintf(fa1, "\n");
 
     }
-    //分隔符表
-    printf("\n分隔符表：\n\n");
-    for (j = 0; j < word_cnt; j++) {
-        if (source_words[j].type == 2) {
-            printf("%s ", source_words[j].value);
-        }
+    //到行末尾读下一行
+    ch = line[cc++];
+    return 0;
+}
 
-    }
-    //运算符表
-    printf("\n运算符表：\n\n");
-    for (j = 0; j < word_cnt; j++) {
-        if (source_words[j].type == 3) {
-            printf("%s ", source_words[j].value);
-        }
+bool isAlpha(char c) {
+    return c >= 'a' && c <= 'z';
+}
 
-    }
-    //数字表
-    printf("\n数字表：\n\n");
-    for (j = 0; j < word_cnt; j++) {
-        if (source_words[j].type == 4) {
-            printf("%s  ", source_words[j].value);
-        }
-    }
+bool isBlank(char c) {
+    return c == ' ' || c == 10 || c == 9;
+}
 
-    //变量表
-    printf("\n变量表：\n");
-    for (j = 0; j < word_cnt; j++) {
-        if (source_words[j].type == 5) {
-            printf("%s ", source_words[j].value);
-        }
+bool isNumber(char c) {
+    return c >= '0' && c <= '9';
+}
+
+int getsym() {
+    int i, j, k;
+    //忽略空格换行和Tab
+    while (isBlank(ch)) {
+        getchdo;
     }
 
-    printf("\n");
+    if (isAlpha(ch)) {
+        k = 0;
+        do {
+            if (k < al) {
+                a[k++] = ch;
+            }
+            getchdo;
+        } while (isAlpha(ch) || isNumber(ch));
+        a[k] = 0;
+        strcpy(id, a);
+        i = 0;
+        j = norw - 1;
+
+        //搜索当前符号是否为保留字
+        do {
+            k = (i + j) / 2;
+            if (strcmp(id, word[k]) <= 0) {
+                j = k - 1;
+            }
+            if (strcmp(id, word[k]) >= 0) {
+                i = k + 1;
+            }
+        } while (i <= j);
+
+        if (i - 1 > j) {
+            //基本字
+            sym = wsym[k];
+        } else {
+            //标识符
+            sym = ident;
+        }
+    } else {
+        if (isNumber(ch)) {
+            k = 0;
+            num = 0;
+            sym = number;
+            do {
+                num = 10 * num + ch - '0';
+                k++;
+                getchdo;
+            } while (isNumber(ch));
+            k--;
+            if (k > nmax) {
+                error(30);
+            }
+        } else {
+            if (ch == ':') {
+                getchdo;
+                if (ch == '=') {
+                    sym = becomes;
+                    getchdo;
+                } else {
+                    sym = nul;
+                }
+            } else {
+                if (ch == '<') {
+                    getchdo;
+                    if (ch == '=') {
+                        sym = leq;
+                        getchdo;
+                    } else {
+                        sym = lss;
+                    }
+                } else {
+                    if (ch == '>') {
+                        getchdo;
+                        if (ch == '=') {
+                            sym = geq;
+                            getchdo;
+                        } else {
+                            sym = gtr;
+                        }
+                    } else {
+                        sym = ssym[ch];
+                        if (sym != period) {
+                            getchdo;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    fprintf(fa1, "%s",);
+    return 0;
+}
+
+void init() {
+    int i;
+    //设置单字符符号
+    for (i = 0; i < 256; i++) {
+        ssym[i] = nul;
+    }
+    ssym['+'] = plus;
+    ssym['-'] = minus;
+    ssym['*'] = times;
+    ssym['/'] = slash;
+    ssym['('] = lparen;
+    ssym[')'] = rparen;
+    ssym['='] = eql;
+    ssym[','] = comma;
+    ssym['.'] = period;
+    ssym['#'] = neq;
+    ssym[';'] = semicolon;
+
+    strcpy(&(word[0][0]), "begin");
+    strcpy(&(word[1][0]), "call");
+    strcpy(&(word[2][0]), "const");
+    strcpy(&(word[3][0]), "do");
+    strcpy(&(word[4][0]), "end");
+    strcpy(&(word[5][0]), "if");
+    strcpy(&(word[6][0]), "odd");
+    strcpy(&(word[7][0]), "procedure");
+    strcpy(&(word[8][0]), "read");
+    strcpy(&(word[9][0]), "then");
+    strcpy(&(word[10][0]), "var");
+    strcpy(&(word[11][0]), "while");
+    strcpy(&(word[12][0]), "write");
+
+    wsym[0] = beginsym;
+    wsym[1] = callsym;
+    wsym[2] = constsym;
+    wsym[3] = dosym;
+    wsym[4] = endsym;
+    wsym[5] = ifsym;
+    wsym[6] = oddsym;
+    wsym[7] = procsym;
+    wsym[8] = readsym;
+    wsym[9] = thensym;
+    wsym[10] = varsym;
+    wsym[11] = whilesym;
+    wsym[12] = writesym;
 
 
 }

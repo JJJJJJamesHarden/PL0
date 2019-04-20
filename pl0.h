@@ -25,7 +25,9 @@
  * 最多的虚拟机代码数
  */
 #define cxmax 200
-
+/**
+ * 符号
+ */
 enum symbol {
     nul, ident, number, plus, minus, times, slash, oddsym, eql, neq,
     lss, leq, gtr, geq, lparen, rparen, comma, semicolon, period, becomes,
@@ -41,13 +43,17 @@ FILE *fa1;
  * getch读取的字符
  */
 char ch;
-
+/**
+ * 当前的符号
+ */
 enum symbol sym;
 /**
  * 当前的ident,多出的一个字节用于存放0
  */
 char id[al + 1];
-
+/**
+ * 当前的num
+ */
 int num;
 /**
  * getch使用的计数器，cc表示当前字符(ch)的位置
@@ -61,20 +67,38 @@ int cx;
  * 读取行缓存区
  */
 char line[81];
-char a[al + 1];            //读取一个符号 暂时存在这里
+/**
+ * 临时符号，多出的一个字节用于存放0
+ */
+char a[al + 1];
 
+/**
+ * 保留字
+ */
+char word[norw][al];
+/**
+ * 保留字对应的符号值
+ */
+enum symbol wsym[norw];
+/**
+ * 单字符的符号值
+ */
+enum symbol ssym[256];
+/**
+ * 错误计数器
+ */
+int err;
 
-char word[norw][al];    //保留字13个 就是begin end if 什么的
-enum symbol wsym[norw]; //保留字对应的符号 begin对应beginsym
-enum symbol ssym[256];    //单字符的符号值
 
 FILE *fin;
 FILE *fout;
-char fname[al];            //输入的文件名
-int err;
-
-#define getchdo            if(-1==getch()) return -1;
-
+char fname[al];
+#define getchdo            if(-1 == getch()) return -1;
 void error(int n);
 
+int getsym();
+
+int getch();
+
+void init();
 #endif //PL0_PL0_H
