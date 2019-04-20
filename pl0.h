@@ -93,6 +93,7 @@ int err;
 FILE *fin;
 FILE *fout;
 char fname[al];
+char list[32][257];
 #define getchdo            if(-1 == getch()) return -1;
 void error(int n);
 

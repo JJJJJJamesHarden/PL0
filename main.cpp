@@ -9,18 +9,18 @@ int main() {
     scanf("%s", fname);
     fin = fopen(fname, "r");
     if (fin) {
-        printf("请输入要保存的文件名\n");
-        scanf("%s", fname);
-        fa1 = fopen(fname, "w");
+        // printf("请输入要保存的文件名\n");
+        //  scanf("%s", fname);
+        //fa1 = fopen(fname, "w");
         init();
         err = 0;
         cc = cx = ll = 0;
         ch = ' ';
-        printf("xxxx");
-        while (getsym() != -1) {
-
+        while (ch != '.') {
+            getsym();
+            printf("\n");
         }
-        fclose(fa1);
+        // fclose(fa1);
         printf("分析完毕");
 
     } else {
@@ -119,6 +119,7 @@ int getsym() {
             //标识符
             sym = ident;
         }
+        printf("%s    %s", a, list[sym]);
     } else {
         if (isNumber(ch)) {
             k = 0;
@@ -133,36 +134,44 @@ int getsym() {
             if (k > nmax) {
                 error(30);
             }
+            printf("%d    %s", num, list[sym]);
         } else {
             if (ch == ':') {
                 getchdo;
                 if (ch == '=') {
                     sym = becomes;
+                    printf(":=    %s", list[sym]);
                     getchdo;
                 } else {
                     sym = nul;
+                    printf(":%c   %s", ch, list[sym]);
                 }
             } else {
                 if (ch == '<') {
                     getchdo;
                     if (ch == '=') {
                         sym = leq;
+                        printf("<=    %s", list[sym]);
                         getchdo;
                     } else {
                         sym = lss;
+                        printf("<    %s", list[sym]);
                     }
                 } else {
                     if (ch == '>') {
                         getchdo;
                         if (ch == '=') {
                             sym = geq;
+                            printf(">=    %s", list[sym]);
                             getchdo;
                         } else {
                             sym = gtr;
+                            printf(">    %s", list[sym]);
                         }
                     } else {
                         sym = ssym[ch];
                         if (sym != period) {
+                            printf("%c   %s", ch, list[sym]);
                             getchdo;
                         }
                     }
@@ -170,7 +179,6 @@ int getsym() {
             }
         }
     }
-    fprintf(fa1, "%s",);
     return 0;
 }
 
@@ -205,6 +213,39 @@ void init() {
     strcpy(&(word[10][0]), "var");
     strcpy(&(word[11][0]), "while");
     strcpy(&(word[12][0]), "write");
+
+    strcpy(&(list[0][0]), "nul");
+    strcpy(&(list[1][0]), "ident");
+    strcpy(&(list[2][0]), "number");
+    strcpy(&(list[3][0]), "plus");
+    strcpy(&(list[4][0]), "minus");
+    strcpy(&(list[5][0]), "times");
+    strcpy(&(list[6][0]), "slash");
+    strcpy(&(list[7][0]), "oddsym");
+    strcpy(&(list[8][0]), "eql");
+    strcpy(&(list[9][0]), "neq");
+    strcpy(&(list[10][0]), "lss");
+    strcpy(&(list[11][0]), "leq");
+    strcpy(&(list[12][0]), "gtr");
+    strcpy(&(list[13][0]), "geq");
+    strcpy(&(list[14][0]), "lparen");
+    strcpy(&(list[15][0]), "rparen");
+    strcpy(&(list[16][0]), "comma");
+    strcpy(&(list[17][0]), "semicolon");
+    strcpy(&(list[18][0]), "period");
+    strcpy(&(list[19][0]), "becomes");
+    strcpy(&(list[20][0]), "beginsym");
+    strcpy(&(list[21][0]), "endsym");
+    strcpy(&(list[22][0]), "ifsym");
+    strcpy(&(list[23][0]), "thensym");
+    strcpy(&(list[24][0]), "whilesym");
+    strcpy(&(list[25][0]), "writesym");
+    strcpy(&(list[26][0]), "readsym");
+    strcpy(&(list[27][0]), "dosym");
+    strcpy(&(list[28][0]), "callsym");
+    strcpy(&(list[29][0]), "constsym");
+    strcpy(&(list[30][0]), "varsym");
+    strcpy(&(list[31][0]), "procsym");
 
     wsym[0] = beginsym;
     wsym[1] = callsym;
