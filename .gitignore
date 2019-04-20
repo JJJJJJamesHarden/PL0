@@ -123,3 +123,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+.idea/
+cmake-build-debug/PL0
+cmake-build-debug/PL0.cbp
+/cmake-build-debug/
